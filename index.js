@@ -26,6 +26,17 @@ client.connect(err => {
       .then(result=>{
         res.send(result.insertedCount > 0)
       })
+  });
+
+  // show all appointment by date
+  app.post('/appointmentByDate',(req, res)=>{
+    const date = req.body;
+    console.log(date.dateApp);
+    appointmentCollection.find({date: date.dateApp})
+    .toArray((err, documents)=>{
+      console.log(documents)
+      res.send(documents);
+    })
   })
 
 });
