@@ -2,7 +2,7 @@ const express = require('express');
 const MongoClient = require('mongodb').MongoClient;
 const app = express();
 const cors = require('cors');
-const port = 5000;
+const port = 5055;
 require('dotenv').config()
 
 app.use(cors());
@@ -22,7 +22,7 @@ client.connect(err => {
   // perform actions on the collection object
   app.post('/addAppointment',(req, res)=>{
       const appointment = req.body;
-      appointmentCollection.insertOne()
+      appointmentCollection.insertOne(appointment)
       .then(result=>{
         res.send(result.insertedCount > 0)
       })
