@@ -2,12 +2,16 @@ const express = require('express');
 const MongoClient = require('mongodb').MongoClient;
 const app = express();
 const cors = require('cors');
+const fileUpload = require('express-fileupload');
 const port = 5055;
 require('dotenv').config()
 
 app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
+app.use(express.static('doctors'));
+app.use(fileUpload());
+
 
 app.get('/', (req, res) => {
   res.send('Hello World!')
@@ -31,12 +35,36 @@ client.connect(err => {
   // show all appointment by date
   app.post('/appointmentByDate',(req, res)=>{
     const date = req.body;
-    console.log(date.dateApp);
+    // console.log(date.dateApp);
     appointmentCollection.find({date: date.dateApp})
     .toArray((err, documents)=>{
-      console.log(documents)
       res.send(documents);
     })
+  });
+
+  // get all patient data
+  app.get("/appointments",(req, res)=>{
+    appointmentCollection.find({})
+    .toArray((err,doc)=>{
+      res.send(doc);
+      console.log(doc,err)
+    })
+  })
+
+  // add a doctor as file
+  app.post('/addADoctor',(req, res)=>{
+    const file = req.files.file;
+    const name = req.body.name;
+    const email = req.body.email;
+    console.log(file, name, email)
+    file.mv(`${__dirname}/doctors/${file.name}`, err =>{
+      if(err){
+        console.log(err);
+        return res.status(500).send({msg: 'failed to upload image'});
+      }
+      return res.send({name: file.name, path:`/${file.name}`});
+    })
+
   })
 
 });
